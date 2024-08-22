@@ -93,9 +93,18 @@ def shortest_path(source, target):
     """
 
     path = []
+    star_frontier = QueueFrontier()
+    star_frontier.add(source)
+    while True:
+        temp = []
+        currstar = star_frontier
+        if currstar == None:
+            break
+        for neighbor in neighbors_for_person(currstar):
+            star_frontier.add(neighbor)
 
-    QueueFrontier.add(source)
-    currstar = source
+    if len(path) == 0:
+        return None
 
     return path
 

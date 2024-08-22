@@ -106,7 +106,7 @@ def utility(board):
     if last_edge is not EMPTY:
         if last_edge == board[2][0] == board[2][1]:
             return win_loss_dict[last_edge]
-        if last_edge == board[2][0] == board[2][1]:
+        if last_edge == board[0][2] == board[1][2]:
             return win_loss_dict[last_edge]
     return 0
 
