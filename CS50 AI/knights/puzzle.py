@@ -18,17 +18,17 @@ BAClaimsKnave = Symbol("B claims A to be a knave")
 
 CKnight = Symbol("C is a Knight")
 CKnave = Symbol("C is a Knave")
-CAClaimsKnight = Symbol("B claims A to be a knave")
+CAClaimsKnight = Symbol("C claims A to be a knave")
 
 Same = Symbol("They are the same")
 Different = Symbol("They are different")
+#More of a showcase of thought variable than actual logic variable
 Contradiction = Symbol("Always False")
 
 # Puzzle 0
 # A says "I am both a knight and a knave."
 knowledge0 = And(
     Biconditional(ALied, AKnave),
-    Biconditional(ATruth, AKnight),
     Or(AKnave, AKnight),
     Not(And(AKnave, AKnight)),
     AClaimsKnave, 
@@ -42,6 +42,7 @@ knowledge0 = And(
 knowledge1 = And(
     Biconditional(ALied, AKnave),
     AClaimsKnave,
+    #Either way for A to make knave claim A had to lie (although Knights cannot lie)
     Implication(AKnight, ALied),
     Implication(AKnave,ALied),
     ALied,
@@ -54,15 +55,14 @@ knowledge1 = And(
 # B says "We are of different kinds."
 knowledge2 = And(
     Biconditional(ALied, AKnave),
-    Biconditional(ATruth, AKnight),
     Biconditional(BLied, BKnave),
     Biconditional(BTruth, BKnight),
     AClaimsSame,
     BClaimsDiff,
-    Biconditional(Not(Same),Different),
-    Implication(Different, And(ALied,BTruth)),
     Implication(Same, And(ATruth, BLied)),
-    Implication(And(ATruth, BLied), And(AKnight, BKnave)),
+    Implication(Not(Same), And(ALied,BTruth)),
+    #In order for the 1st implication to be true, it's conclusion would have to be false
+    Implication(And(Same, And(ATruth, BLied)), Contradiction),
     Not(Same)
 
 )
@@ -76,7 +76,6 @@ knowledge3 = And(
     Biconditional(ALied, AKnave),
     Biconditional(ATruth, AKnight),
     Biconditional(BLied, BKnave),
-    Biconditional(BTruth, BKnight),
     Or(AClaimsKnave, AClaimsKnight),
     Implication(Not(AClaimsKnave), BLied),
     Implication(BKnave, CKnight),
@@ -86,10 +85,8 @@ knowledge3 = And(
     Implication(And(ATruth, AKnave), Contradiction),
     Implication(And(AKnight, AClaimsKnave), ALied),
     Implication(And(ALied, AKnight), Contradiction),
+    #Based on logic above, it is impossible for A to have claimed to have been a Knave
     Not(AClaimsKnave)
-
-
-
 )
 
 
