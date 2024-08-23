@@ -91,6 +91,8 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+    if source == target:
+        return []
     path = []
     star_frontier = QueueFrontier()
     star_frontier.add((None, source))
@@ -111,6 +113,7 @@ def shortest_path(source, target):
                     targetFound = True
                     break
                 visited.add(neighbor[1])
+                star_frontier.add(neighbor)
         
 
     if targetFound != True:
