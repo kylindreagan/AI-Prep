@@ -40,9 +40,12 @@ knowledge0 = And(
 # A says "We are both knaves."
 # B says nothing.
 knowledge1 = And(
-    AKnave,
+    Biconditional(ALied, AKnave),
+    AClaimsKnave,
+    Implication(AKnight, ALied),
+    Implication(AKnave,ALied),
+    ALied,
     ABClaimsKnave,
-    Implication(AKnave, ALied),
     Implication(And(ALied, ABClaimsKnave), BKnight)
 )
 
