@@ -47,6 +47,10 @@ def result(board, action):
     Returns the board that results from making move (i, j) on the board.
     """
     tempboard = copy.deepcopy(board)
+    if action[0] < 0 or action[1] < 0 or action[0] >= 3 or action[1] >= 3:
+        raise IndexError
+    if tempboard[action[0]][action[1]] != None:
+        raise AssertionError
     tempboard[action[0]][action[1]] = player(board)
     return tempboard
 
@@ -115,6 +119,8 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
+    if utility(board) != 0:
+        return None
     me = player(board)
     if me == X:
         wewantbig = True
