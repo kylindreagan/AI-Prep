@@ -88,34 +88,27 @@ def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
-    win_loss_dict = {X: 1, O:-1}
-    first_edge = board[0][0]
-    mid = board[1][1]
-    last_edge =  board[2][2]
-    #Small board so it'll do
-    if mid is not EMPTY:
-        if first_edge == mid == last_edge:
-            return win_loss_dict[mid]
-        if board[0][2] == mid == board[2][0]:
-            return win_loss_dict[mid]
-        if board[1][0] == mid == board[1][2]:
-            return win_loss_dict[mid]
-        if board[0][1] == mid == board[2][1]:
-            return win_loss_dict[mid]
-    if first_edge is not EMPTY:
-        if first_edge == board[0][1] == board[0][2]:
-            return win_loss_dict[first_edge]
-        if first_edge == board[1][0] == board[2][0]:
-            return win_loss_dict[first_edge]
-    if last_edge is not EMPTY:
-        if last_edge == board[2][0] == board[2][1]:
-            return win_loss_dict[last_edge]
-        if last_edge == board[0][2] == board[1][2]:
-            return win_loss_dict[last_edge]
+    win_loss_dict = {X: 1, O: -1}
+    winning_combinations = [
+        [(0, 0), (0, 1), (0, 2)],  # First row
+        [(1, 0), (1, 1), (1, 2)],  # Second row
+        [(2, 0), (2, 1), (2, 2)],  # Third row
+        [(0, 0), (1, 0), (2, 0)],  # First column
+        [(0, 1), (1, 1), (2, 1)],  # Second column
+        [(0, 2), (1, 2), (2, 2)],  # Third column
+        [(0, 0), (1, 1), (2, 2)],  # Diagonal from top-left to bottom-right
+        [(0, 2), (1, 1), (2, 0)]   # Diagonal from top-right to bottom-left
+    ]
+    
+    for combination in winning_combinations:
+        first, second, third = combination
+        if board[first[0]][first[1]] != EMPTY and board[first[0]][first[1]] == board[second[0]][second[1]] == board[third[0]][third[1]]:
+            return win_loss_dict[board[first[0]][first[1]]]
+    
     return 0
 
 
-def minimax(board):
+def minimax(board, alpha=float('-inf'), beta=float('inf')):
     """
     Returns the optimal action for the current player on the board.
     """
@@ -131,32 +124,41 @@ def minimax(board):
     for action in actions(board):
         tempboard = result(board, action)
         if wewantbig:
-            v = min_value(tempboard)
+            v = min_value(tempboard, alpha, beta)
             if v > curr:
                 nextmove = action
                 curr = v
+            alpha = max(alpha, curr)
         else:
-            v = max_value(tempboard)
+            v = max_value(tempboard, alpha, beta)
             if v < curr:
                 nextmove = action
                 curr = v
+            beta = min(beta, curr)
+        
+        if beta <= alpha:
+            break
 
     return nextmove
 
-def max_value(board):
+def max_value(board, alpha, beta):
     if terminal(board):
         return utility(board)
     v = float('-inf')
     for action in actions(board):
         tempboard = result(board, action)
-        v = max(v, min_value(tempboard))
+        v = max(v, min_value(tempboard, alpha, beta))
+        if v >= beta:
+            break
     return v
 
-def min_value(board):
+def min_value(board, alpha, beta):
     if terminal(board):
         return utility(board)
     v = float('inf')
     for action in actions(board):
         tempboard = result(board, action)
-        v = min(v, max_value(tempboard))
+        v = min(v, max_value(tempboard, alpha, beta))
+        if v <= alpha:
+            break
     return v
