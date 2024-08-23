@@ -91,21 +91,39 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
-
     path = []
     star_frontier = QueueFrontier()
-    star_frontier.add(source)
+    star_frontier.add((None, source))
+    visited = set()
+    visited.add(source)
+    child_to_parent = {source: None}
+    child_to_movie = {source: None}
+    targetFound = False
     while True:
-        temp = []
-        currstar = star_frontier
-        if currstar == None:
+        currstar = star_frontier.remove()
+        if currstar == None or targetFound:
             break
-        for neighbor in neighbors_for_person(currstar):
-            star_frontier.add(neighbor)
+        for neighbor in neighbors_for_person(currstar[1]):
+            if neighbor[1] not in visited:
+                child_to_movie[neighbor[1]] = neighbor[0]
+                child_to_parent[neighbor[1]] = currstar[1]
+                if neighbor[1] == target:
+                    targetFound = True
+                    break
+                visited.add(neighbor[1])
+        
 
-    if len(path) == 0:
+    if targetFound != True:
         return None
-
+    
+    newCurr = target
+    while True:
+        path.append((child_to_movie[newCurr], newCurr))
+        newCurr = child_to_parent[newCurr]
+        if child_to_parent[newCurr] == None:
+            break
+    
+    path.reverse()
     return path
 
 
