@@ -212,7 +212,7 @@ class MinesweeperAI():
             for h in total_cells:
                 if h != cell:
                     self.mark_safe(h)
-        elif count == 8:
+        elif count == len(total_cells):
             for h in total_cells:
                 if h != cell:
                     self.mark_mine(h)
@@ -222,6 +222,7 @@ class MinesweeperAI():
                 s.mark_mine(curr_cell)
             elif curr_cell in self.safes:
                 s.mark_safe(curr_cell)
+        
         self.knowledge.append(s)
 
         self.update_knowledge()
@@ -234,12 +235,14 @@ class MinesweeperAI():
         updated = True
         while updated:
             updated = False
+            empty_sentences = []
 
             # Iterate over a copy to avoid modifying the list while iterating
             for sentence in self.knowledge[:]:
                 # Infer known safes and mines from the sentence
                 safes = sentence.known_safes()
                 mines = sentence.known_mines()
+                marked = set(x for x in sentence.cells if x in self.moves_made)
 
                 # Mark all inferred safe cells
                 for safe in safes:
@@ -253,14 +256,19 @@ class MinesweeperAI():
                         self.mark_mine(mine)
                         updated = True
                 
-                if sentence.count == len(sentence.cells) - len(safes):
-                    for k in sentence.cells - safes:
-                        self.mark_mine(k)
-                    updated = True
+                # Logic for identifying a mine based on surrounding cells
+                unmarked_mines = sentence.cells - safes - marked
+                if len(unmarked_mines) == sentence.count:
+                    # If there is exactly count unmarked cell left, we have found mines
+                    for remaining_cell in unmarked_mines:
+                        self.mark_mine(remaining_cell)
+                        updated = True
 
                 # Remove the sentence if it has no more cells to infer
-                if len(sentence.cells) == 0:
+                if len(sentence.cells) == 0 and sentence in self.knowledge:
                     self.knowledge.remove(sentence)
+                
+        
 
     def make_safe_move(self):
         """
